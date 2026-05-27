@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KGV · Finanzen 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-dark:   #1a4d2e;
+    --green-mid:    #2d7a4f;
+    --green-light:  #e4ede7;
+    --amber:        #c97c1a;
+    --amber-light:  #fdf3e3;
+    --cream:        #f6f3ee;
+    --warm-white:   #faf9f7;
+    --ink:          #1c1c1a;
+    --ink-soft:     #4a4a46;
+    --ink-faint:    #9a9a92;
+    --border:       #ddd9d0;
+    --red:          #c0392b;
+    --red-light:    #fdf0ee;
+    --yellow:       #e0a800;
+    --yellow-light: #fffbeb;
+    --signal-green: #2d7a4f;
+    --signal-green-bg: #e4f0e9;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  /* ─── HEADER ─── */
+  header {
+    background: var(--green-dark);
+    color: white;
+    padding: 20px 20px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,.18);
+  }
+  .header-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .header-title h1 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+  .header-title p {
+    font-size: 0.75rem;
+    opacity: 0.62;
+    margin-top: 3px;
+    letter-spacing: 0.04em;
+  }
+  .header-badge {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.8);
+    white-space: nowrap;
+    text-align: right;
+    line-height: 1.4;
+  }
+  .header-badge strong { display: block; color: white; font-weight: 600; }
+
+  /* TABS */
+  nav {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid rgba(255,255,255,.12);
+  }
+  .tab-btn {
+    flex: 1;
+    background: none;
+    border: none;
+    color: rgba(255,255,255,.55);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 10px 4px 11px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all .18s;
+    letter-spacing: 0.02em;
+  }
+  .tab-btn.active {
+    color: white;
+    border-bottom-color: #8fcba0;
+  }
+  .tab-btn:hover { color: rgba(255,255,255,.85); }
+
+  /* ─── MAIN ─── */
+  main { padding: 20px 16px 40px; max-width: 600px; margin: 0 auto; }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ─── CARDS ─── */
+  .cards-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .cards-row.three { grid-template-columns: 1fr 1fr 1fr; }
+  .card {
+    background: white;
+    border-radius: 12px;
+    padding: 16px 14px;
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 4px rgba(0,0,0,.05);
+  }
+  .card.full { grid-column: 1 / -1; }
+  .card-label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 6px;
+  }
+  .card-value {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .card-value.income { color: var(--signal-green); }
+  .card-value.expense { color: var(--red); }
+  .card-value.balance { color: var(--green-dark); }
+  .card-sub {
+    font-size: 0.72rem;
+    color: var(--ink-faint);
+    margin-top: 4px;
+  }
+
+  /* STATUS PILLS */
+  .status-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 11px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+  .pill-ok    { background: var(--signal-green-bg); color: var(--signal-green); }
+  .pill-warn  { background: var(--yellow-light); color: #856500; }
+  .pill-alert { background: var(--red-light); color: var(--red); }
+  .pill-dot   { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+  /* YEAR PROGRESS */
+  .year-banner {
+    background: var(--green-dark);
+    color: white;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .year-banner-text { flex: 1; }
+  .year-banner-text .yl { font-size: 0.72rem; opacity: .65; letter-spacing:.04em; text-transform:uppercase; }
+  .year-banner-text .yv { font-size: 0.95rem; font-weight: 600; margin-top: 2px; }
+  .year-bar-wrap { flex: 1.2; }
+  .year-bar-bg {
+    background: rgba(255,255,255,.18);
+    border-radius: 4px;
+    height: 8px;
+    overflow: hidden;
+  }
+  .year-bar-fill {
+    background: #8fcba0;
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.8s cubic-bezier(.25,.8,.25,1);
+  }
+  .year-bar-pct { font-size: 0.72rem; opacity:.7; margin-top: 4px; }
+
+  /* ─── BUDGET SECTION ─── */
+  .section-title {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 24px 0 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-title:first-of-type { margin-top: 0; }
+
+  .budget-item {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 13px 14px;
+    margin-bottom: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.04);
+  }
+  .budget-item-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    gap: 8px;
+  }
+  .budget-item-name {
+    font-weight: 500;
+    font-size: 0.88rem;
+    flex: 1;
+    line-height: 1.3;
+  }
+  .ampel {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+  .ampel-green  { background: var(--signal-green-bg); color: var(--signal-green); box-shadow: 0 0 0 2px var(--signal-green); }
+  .ampel-yellow { background: var(--yellow-light);  color: var(--yellow); box-shadow: 0 0 0 2px var(--yellow); }
+  .ampel-red    { background: var(--red-light);     color: var(--red);    box-shadow: 0 0 0 2px var(--red); }
+  .ampel-grey   { background: #f0f0ed;              color: #bbb;          box-shadow: 0 0 0 2px #ddd; }
+
+  .budget-bars { display: flex; flex-direction: column; gap: 7px; }
+  .bar-row { display: flex; align-items: center; gap: 8px; }
+  .bar-type {
+    font-size: 0.65rem;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    width: 28px;
+    flex-shrink: 0;
+  }
+  .bar-outer {
+    flex: 1;
+    background: #f0ede8;
+    border-radius: 4px;
+    height: 7px;
+    overflow: visible;
+    position: relative;
+  }
+  .bar-inner {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.7s cubic-bezier(.25,.8,.25,1);
+    min-width: 2px;
+    max-width: 100%;
+    position: relative;
+  }
+  .bar-inner.income-bar { background: var(--signal-green); }
+  .bar-inner.expense-bar-ok     { background: var(--signal-green); }
+  .bar-inner.expense-bar-warn   { background: var(--yellow); }
+  .bar-inner.expense-bar-alert  { background: var(--red); }
+  .bar-marker {
+    position: absolute;
+    top: -3px;
+    height: 13px;
+    width: 2px;
+    background: rgba(0,0,0,.25);
+    border-radius: 1px;
+  }
+  .bar-amounts {
+    font-size: 0.7rem;
+    color: var(--ink-soft);
+    white-space: nowrap;
+    text-align: right;
+    min-width: 80px;
+  }
+  .bar-amounts .ist { font-weight: 600; }
+  .bar-amounts .plan { color: var(--ink-faint); }
+
+  /* ─── BUCHUNGEN ─── */
+  .booking-list { display: flex; flex-direction: column; gap: 7px; }
+  .booking-item {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    gap: 2px 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.04);
+  }
+  .b-top-left {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .b-date {
+    font-size: 0.7rem;
+    color: var(--ink-faint);
+    white-space: nowrap;
+  }
+  .b-konto-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--ink-faint);
+    flex-shrink: 0;
+  }
+  .b-konto-dot.bank  { background: var(--green-mid); }
+  .b-konto-dot.kasse { background: var(--amber); }
+  .b-desc {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.3;
+    grid-column: 1;
+  }
+  .b-partner {
+    font-size: 0.75rem;
+    color: var(--ink-faint);
+    grid-column: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .b-amount {
+    grid-row: 1 / 3;
+    grid-column: 2;
+    align-self: center;
+    font-family: 'Libre Baskerville', serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-align: right;
+    white-space: nowrap;
+  }
+  .b-amount.income  { color: var(--signal-green); }
+  .b-amount.expense { color: var(--red); }
+
+  /* ─── OVERVIEW AMPEL TABLE ─── */
+  .overview-table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+  .overview-table td { padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 0.82rem; vertical-align: middle; }
+  .overview-table tr:last-child td { border-bottom: none; }
+  .overview-table .ot-label { color: var(--ink-soft); padding-right: 10px; }
+  .overview-table .ot-val { font-weight: 600; text-align: right; padding: 0 10px; }
+  .overview-table .ot-dot { width: 28px; text-align: center; }
+  .small-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .dot-green  { background: var(--signal-green); }
+  .dot-yellow { background: var(--yellow); }
+  .dot-red    { background: var(--red); }
+  .dot-grey   { background: #ccc; }
+
+  .export-note {
+    text-align: center;
+    font-size: 0.7rem;
+    color: var(--ink-faint);
+    margin-top: 28px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ANIMATE */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .tab-panel.active > * {
+    animation: fadeUp 0.28s ease both;
+  }
+  .tab-panel.active > *:nth-child(2) { animation-delay: .04s; }
+  .tab-panel.active > *:nth-child(3) { animation-delay: .08s; }
+  .tab-panel.active > *:nth-child(4) { animation-delay: .12s; }
+  .tab-panel.active > *:nth-child(5) { animation-delay: .16s; }
+  .tab-panel.active > *:nth-child(6) { animation-delay: .20s; }
+
+  .demo-banner {
+    background: var(--amber-light);
+    border: 1px solid #e8c68a;
+    border-radius: 8px;
+    padding: 8px 13px;
+    font-size: 0.75rem;
+    color: var(--amber);
+    margin-bottom: 14px;
+    font-weight: 500;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="header-title">
+      <h1>KGV Finanzen 2026</h1>
+      <p id="header-subtitle">Stand wird geladen …</p>
+    </div>
+    <div class="header-badge" id="header-badge">
+      <span>–</span>
+    </div>
+  </div>
+  <nav>
+    <button class="tab-btn active" onclick="showTab('uebersicht')">Übersicht</button>
+    <button class="tab-btn" onclick="showTab('budget')">Budget-Ampeln</button>
+    <button class="tab-btn" onclick="showTab('buchungen')">Buchungen</button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ═══ TAB: ÜBERSICHT ═══ -->
+  <div id="tab-uebersicht" class="tab-panel active">
+    <div id="demo-banner" class="demo-banner" style="display:none">
+      ⚠ Demo-Daten – echte JSON-Datei noch nicht verknüpft
+    </div>
+
+    <div class="cards-row" id="cards-main"></div>
+    <div class="status-row" id="status-pills"></div>
+    <div class="card">
+      <div class="card-label">Budget-Schnellblick</div>
+      <table class="overview-table" id="overview-table"></table>
+    </div>
+    <p class="export-note" id="export-note-1"></p>
+  </div>
+
+  <!-- ═══ TAB: BUDGET ═══ -->
+  <div id="tab-budget" class="tab-panel">
+    <div id="year-banner" class="year-banner">
+      <div class="year-banner-text">
+        <div class="yl">Jahresfortschritt</div>
+        <div class="yv" id="year-pct-text">–</div>
+      </div>
+      <div class="year-bar-wrap">
+        <div class="year-bar-bg"><div class="year-bar-fill" id="year-bar" style="width:0%"></div></div>
+        <div class="year-bar-pct" id="year-bar-label"></div>
+      </div>
+    </div>
+
+    <div class="section-title">Einnahmen</div>
+    <div id="budget-einnahmen"></div>
+
+    <div class="section-title">Ausgaben</div>
+    <div id="budget-ausgaben"></div>
+
+    <p class="export-note" id="export-note-2"></p>
+  </div>
+
+  <!-- ═══ TAB: BUCHUNGEN ═══ -->
+  <div id="tab-buchungen" class="tab-panel">
+    <div class="booking-list" id="booking-list"></div>
+    <p class="export-note" id="export-note-3"></p>
+  </div>
+
+</main>
+
+<script>
+/* ─── DEMO DATA (used if kgv_export.json not found) ─── */
+const DEMO_DATA = {"exportiert":"2026-05-22 18:45","version":"1.0","jahresfortschritt":0.39,"kernzahlen":{"einnahmen":37747.42,"ausgaben":12495.99,"saldo":25251.43,"geldtransfers":800,"offenePosten":27,"stoppAnzahl":0,"pruefenAnzahl":8},"budgetBereiche":[{"bereich":"MITGLIEDSBEITRAEGE","label":"Mitgliedsbeiträge","typ":"einnahmen","planEinnahmen":4315,"planAusgaben":0,"istEinnahmen":4445,"istAusgaben":0},{"bereich":"GEMEINSCHAFTSARBEIT","label":"Gemeinschaftsarbeit","typ":"einnahmen","planEinnahmen":4000,"planAusgaben":0,"istEinnahmen":3175,"istAusgaben":0},{"bereich":"FESTSTUNDEN","label":"Feststunden","typ":"einnahmen","planEinnahmen":0,"planAusgaben":0,"istEinnahmen":800,"istAusgaben":0},{"bereich":"SONDERUMLAGE","label":"Sonderumlage","typ":"einnahmen","planEinnahmen":2100,"planAusgaben":0,"istEinnahmen":0,"istAusgaben":0},{"bereich":"AUFNAHME","label":"Aufnahmegebühren","typ":"einnahmen","planEinnahmen":150,"planAusgaben":0,"istEinnahmen":100,"istAusgaben":0},{"bereich":"VERANSTALTUNG","label":"Veranstaltungen","typ":"beides","planEinnahmen":4500,"planAusgaben":3800,"istEinnahmen":800,"istAusgaben":324.65},{"bereich":"VEREINSHEIM","label":"Vereinsheim (Betrieb & Instandh.)","typ":"ausgaben","planEinnahmen":1200,"planAusgaben":16246,"istEinnahmen":218.12,"istAusgaben":1302.92},{"bereich":"REINIGUNG","label":"Reinigung Ehrenamt","typ":"ausgaben","planEinnahmen":0,"planAusgaben":1640,"istEinnahmen":0,"istAusgaben":560},{"bereich":"ANLAGE","label":"Instandhaltung Anlage","typ":"ausgaben","planEinnahmen":0,"planAusgaben":2550,"istEinnahmen":0,"istAusgaben":88.77},{"bereich":"ANSCHAFFUNGEN","label":"Anschaffungen / GWG","typ":"ausgaben","planEinnahmen":0,"planAusgaben":2500,"istEinnahmen":0,"istAusgaben":124.08},{"bereich":"VERSICHERUNG_VEREIN","label":"Versicherungen","typ":"ausgaben","planEinnahmen":0,"planAusgaben":86.37,"istEinnahmen":0,"istAusgaben":107.4},{"bereich":"FINANZEN","label":"Bankgebühren","typ":"ausgaben","planEinnahmen":0,"planAusgaben":350,"istEinnahmen":0,"istAusgaben":123.43},{"bereich":"VERWALTUNG","label":"Verwaltung","typ":"ausgaben","planEinnahmen":0,"planAusgaben":350,"istEinnahmen":34.8,"istAusgaben":26.24}],"letzteBuchungen":[{"datum":"2026-05-22","belegNr":"2026-K0008","geldkonto":"Kasse","richtung":"Ausgabe","betrag":16.9,"kostenbereich":"VERWALTUNG","partner":"Bundesverband Kleingärtner","bemerkung":"Finanzlektüre 2026"},{"datum":"2026-04-30","belegNr":"2026-B0093","geldkonto":"Bank","richtung":"Ausgabe","betrag":70,"kostenbereich":"REINIGUNG","partner":"Naki Tinastepe","bemerkung":"Ehrenamtspauschale VH April"},{"datum":"2026-04-30","belegNr":"2026-B0092","geldkonto":"Bank","richtung":"Ausgabe","betrag":70,"kostenbereich":"REINIGUNG","partner":"Nejla Tinastepe","bemerkung":"Ehrenamtspauschale San April"},{"datum":"2026-04-25","belegNr":"2026-K0007","geldkonto":"Kasse","richtung":"Ausgabe","betrag":3.49,"kostenbereich":"VERWALTUNG","partner":"Aldi Süd","bemerkung":"Kopierpapier"},{"datum":"2026-04-17","belegNr":"2026-B0119","geldkonto":"Bank","richtung":"Ausgabe","betrag":87.92,"kostenbereich":"VEREINSHEIM","partner":"Lucy Medical GmbH","bemerkung":"Handtuchrollen"},{"datum":"2026-04-15","belegNr":"2026-B0118","geldkonto":"Bank","richtung":"Ausgabe","betrag":519.64,"kostenbereich":"VEREINSHEIM","partner":"Schlüssel Kaeppke","bemerkung":"Restzahlung Schließsystem"},{"datum":"2026-04-15","belegNr":"2026-B0117","geldkonto":"Bank","richtung":"Ausgabe","betrag":212,"kostenbereich":"VERBRAUCH_PAECHTER","partner":"Stadtwerke Duisburg","bemerkung":"Abschlag Wasser 04/2026"},{"datum":"2026-04-15","belegNr":"2026-B0116","geldkonto":"Bank","richtung":"Ausgabe","betrag":559,"kostenbereich":"VERBRAUCH_PAECHTER","partner":"Stadtwerke Duisburg","bemerkung":"Abschlag Strom 04/2026"},{"datum":"2026-04-13","belegNr":"2026-B0115","geldkonto":"Bank","richtung":"Ausgabe","betrag":19.95,"kostenbereich":"VEREINSHEIM","partner":"Bauhaus","bemerkung":"Buntlack"},{"datum":"2026-04-01","belegNr":"2026-B0112","geldkonto":"Bank","richtung":"Ausgabe","betrag":21.9,"kostenbereich":"VEREINSHEIM","partner":"Bauhaus","bemerkung":"Aufschraubhülsen"},{"datum":"2026-03-26","belegNr":"2026-B0110","geldkonto":"Bank","richtung":"Ausgabe","betrag":99.96,"kostenbereich":"VEREINSHEIM","partner":"Holz Bongartz","bemerkung":"Balken Vorbau Vereinsheim"},{"datum":"2026-03-23","belegNr":"2026-B0109","geldkonto":"Bank","richtung":"Ausgabe","betrag":88.77,"kostenbereich":"ANLAGE","partner":"Verband Duisburger KGV","bemerkung":"Spielplatzkontrolle"},{"datum":"2026-03-21","belegNr":"2026-K0001","geldkonto":"Kasse","richtung":"Einnahme","betrag":800,"kostenbereich":"VERANSTALTUNG","partner":"Angrillen","bemerkung":"Angrillen-Erlös"},{"datum":"2026-03-21","belegNr":"2026-B0108","geldkonto":"Bank","richtung":"Ausgabe","betrag":118.77,"kostenbereich":"ANSCHAFFUNGEN","partner":"Bauhaus","bemerkung":"Kabeltrommeln"},{"datum":"2026-03-20","belegNr":"2026-B0106","geldkonto":"Bank","richtung":"Ausgabe","betrag":142.62,"kostenbereich":"VERANSTALTUNG","partner":"Ridder","bemerkung":"Angrillen Ridder"}]};
+
+/* ─── UTILS ─── */
+const fmt = n => n.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const fmtShort = n => {
+  if (Math.abs(n) >= 1000) return (n/1000).toLocaleString('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1}) + ' k€';
+  return n.toLocaleString('de-DE',{minimumFractionDigits:0,maximumFractionDigits:0}) + ' €';
+};
+
+function ampelExpense(ist, plan, jahresfort) {
+  if (plan <= 0) return ist > 0 ? 'yellow' : 'grey';
+  const pct = ist / plan;
+  if (pct > 1.0) return 'red';
+  if (pct > 0.8) return 'red';
+  if (pct > jahresfort * 1.5) return 'yellow';
+  return 'green';
+}
+
+function ampelIncome(ist, plan, jahresfort) {
+  if (plan <= 0) return ist > 0 ? 'green' : 'grey';
+  const pct = ist / plan;
+  if (pct >= 1.0) return 'green';
+  if (pct >= jahresfort * 0.7) return 'green';
+  if (pct >= jahresfort * 0.4) return 'yellow';
+  return 'red';
+}
+
+function ampelDot(c) {
+  return `<span class="small-dot dot-${c}"></span>`;
+}
+
+function ampelCircle(c, label) {
+  return `<div class="ampel ampel-${c}" title="${label}">●</div>`;
+}
+
+/* ─── RENDER ─── */
+function render(data, isDemo) {
+  const kz = data.kernzahlen;
+  const jf = data.jahresfortschritt || 0.42;
+
+  /* Header */
+  document.getElementById('header-subtitle').textContent = 'Stand: ' + data.exportiert;
+  document.getElementById('header-badge').innerHTML =
+    `<strong>${fmt(kz.saldo)} €</strong>Saldo E/A`;
+
+  if (isDemo) document.getElementById('demo-banner').style.display = 'block';
+
+  /* ── TAB 1: Übersicht ── */
+  document.getElementById('cards-main').innerHTML = `
+    <div class="card">
+      <div class="card-label">Einnahmen</div>
+      <div class="card-value income">+${fmtShort(kz.einnahmen)}</div>
+      <div class="card-sub">echte Einnahmen YTD</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Ausgaben</div>
+      <div class="card-value expense">−${fmtShort(kz.ausgaben)}</div>
+      <div class="card-sub">echte Ausgaben YTD</div>
+    </div>
+    <div class="card full">
+      <div class="card-label">Saldo Einnahmen / Ausgaben</div>
+      <div class="card-value balance">${fmt(kz.saldo)} €</div>
+      <div class="card-sub">Stand ${data.exportiert}</div>
+    </div>`;
+
+  /* Status pills */
+  const pills = [];
+  if (kz.stoppAnzahl === 0) pills.push(`<span class="pill pill-ok"><span class="pill-dot"></span>Kein STOPP</span>`);
+  else pills.push(`<span class="pill pill-alert"><span class="pill-dot"></span>${kz.stoppAnzahl} STOPP</span>`);
+  if (kz.pruefenAnzahl > 0) pills.push(`<span class="pill pill-warn"><span class="pill-dot"></span>${kz.pruefenAnzahl} zu prüfen</span>`);
+  if (kz.offenePosten > 0) pills.push(`<span class="pill pill-warn"><span class="pill-dot"></span>${kz.offenePosten} offene Posten</span>`);
+  document.getElementById('status-pills').innerHTML = pills.join('');
+
+  /* Overview table */
+  const tableRows = data.budgetBereiche
+    .filter(b => b.planEinnahmen > 0 || b.planAusgaben > 0 || b.istEinnahmen > 0 || b.istAusgaben > 0)
+    .slice(0, 8)
+    .map(b => {
+      let color, valTxt;
+      if (b.typ === 'einnahmen' || (b.typ === 'beides' && b.planEinnahmen >= b.planAusgaben)) {
+        color = ampelIncome(b.istEinnahmen, b.planEinnahmen, jf);
+        valTxt = `+${fmtShort(b.istEinnahmen)}`;
+      } else {
+        color = ampelExpense(b.istAusgaben, b.planAusgaben, jf);
+        valTxt = `−${fmtShort(b.istAusgaben)}`;
+      }
+      return `<tr>
+        <td class="ot-label">${b.label}</td>
+        <td class="ot-val">${valTxt}</td>
+        <td class="ot-dot">${ampelDot(color)}</td>
+      </tr>`;
+    }).join('');
+  document.getElementById('overview-table').innerHTML = tableRows;
+
+  document.getElementById('export-note-1').textContent = `Exportiert: ${data.exportiert} · Jahresfortschritt ${Math.round(jf*100)} %`;
+
+  /* ── TAB 2: Budget-Ampeln ── */
+  const jfPct = Math.round(jf * 100);
+  document.getElementById('year-pct-text').textContent = `${jfPct} % des Jahres abgelaufen`;
+  document.getElementById('year-bar').style.width = jfPct + '%';
+  document.getElementById('year-bar-label').textContent = `Tag ${Math.round(jf*365)} von 365`;
+
+  function renderBudgetItem(b) {
+    let bars = '';
+    const hasIncomePlan = b.planEinnahmen > 0 || b.istEinnahmen > 0;
+    const hasExpensePlan = b.planAusgaben > 0 || b.istAusgaben > 0;
+    let mainColor = 'grey';
+
+    if (hasIncomePlan && b.planEinnahmen > 0) {
+      const pct = Math.min(100, b.istEinnahmen / b.planEinnahmen * 100);
+      const c = ampelIncome(b.istEinnahmen, b.planEinnahmen, jf);
+      mainColor = c;
+      bars += `<div class="bar-row">
+        <span class="bar-type">Ein.</span>
+        <div class="bar-outer">
+          <div class="bar-inner income-bar" style="width:${pct}%"></div>
+          <div class="bar-marker" style="left:${Math.round(jf*100)}%"></div>
+        </div>
+        <span class="bar-amounts"><span class="ist">${fmtShort(b.istEinnahmen)}</span> <span class="plan">/ ${fmtShort(b.planEinnahmen)}</span></span>
+      </div>`;
+    } else if (hasIncomePlan && b.istEinnahmen > 0) {
+      bars += `<div class="bar-row">
+        <span class="bar-type">Ein.</span>
+        <div class="bar-outer"><div class="bar-inner income-bar" style="width:100%"></div></div>
+        <span class="bar-amounts"><span class="ist">${fmtShort(b.istEinnahmen)}</span> <span class="plan">/ kein Plan</span></span>
+      </div>`;
+    }
+
+    if (hasExpensePlan && b.planAusgaben > 0) {
+      const pct = Math.min(100, b.istAusgaben / b.planAusgaben * 100);
+      const c = ampelExpense(b.istAusgaben, b.planAusgaben, jf);
+      if (mainColor === 'grey') mainColor = c;
+      const cls = c === 'green' ? 'expense-bar-ok' : c === 'yellow' ? 'expense-bar-warn' : 'expense-bar-alert';
+      bars += `<div class="bar-row">
+        <span class="bar-type">Ausg.</span>
+        <div class="bar-outer">
+          <div class="bar-inner ${cls}" style="width:${pct}%"></div>
+          <div class="bar-marker" style="left:${Math.round(jf*100)}%"></div>
+        </div>
+        <span class="bar-amounts"><span class="ist">${fmtShort(b.istAusgaben)}</span> <span class="plan">/ ${fmtShort(b.planAusgaben)}</span></span>
+      </div>`;
+    }
+
+    return `<div class="budget-item">
+      <div class="budget-item-top">
+        <span class="budget-item-name">${b.label}</span>
+        ${ampelCircle(mainColor, mainColor)}
+      </div>
+      <div class="budget-bars">${bars}</div>
+    </div>`;
+  }
+
+  const einnahmenBereiche = data.budgetBereiche.filter(b => b.typ === 'einnahmen' || b.typ === 'beides');
+  const ausgabenBereiche  = data.budgetBereiche.filter(b => b.typ === 'ausgaben'  || b.typ === 'beides');
+
+  document.getElementById('budget-einnahmen').innerHTML = einnahmenBereiche.map(renderBudgetItem).join('');
+  document.getElementById('budget-ausgaben').innerHTML  = ausgabenBereiche.map(renderBudgetItem).join('');
+  document.getElementById('export-note-2').textContent = `Der senkrechte Strich zeigt den Jahresfortschritt (${jfPct} %). Exportiert: ${data.exportiert}`;
+
+  /* ── TAB 3: Buchungen ── */
+  const monthNames = ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+  function fmtDate(d) {
+    const parts = d.split('-');
+    return `${parseInt(parts[2])}. ${monthNames[parseInt(parts[1])-1]}`;
+  }
+
+  const bookingHtml = data.letzteBuchungen.map(b => {
+    const isIn = b.richtung === 'Einnahme';
+    const dotClass = b.geldkonto.toLowerCase() === 'bank' ? 'bank' : 'kasse';
+    return `<div class="booking-item">
+      <div class="b-top-left">
+        <span class="b-date">${fmtDate(b.datum)}</span>
+        <span class="b-konto-dot ${dotClass}" title="${b.geldkonto}"></span>
+        <span class="b-date" style="color:var(--ink-faint)">${b.belegNr}</span>
+      </div>
+      <div class="b-desc">${b.bemerkung || b.partner}</div>
+      <div class="b-partner">${b.partner}</div>
+      <div class="b-amount ${isIn ? 'income' : 'expense'}">${isIn ? '+' : '−'}${fmt(b.betrag)} €</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('booking-list').innerHTML = bookingHtml;
+
+  ['export-note-3'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = `Letzte ${data.letzteBuchungen.length} gebuchte Vorgänge · ${data.exportiert}`;
+  });
+}
+
+/* ─── TAB SWITCHING ─── */
+function showTab(name) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+
+/* ─── LOAD DATA ─── */
+fetch('kgv_export.json?t=' + Date.now())
+  .then(r => { if (!r.ok) throw new Error('not found'); return r.json(); })
+  .then(data => render(data, false))
+  .catch(() => render(DEMO_DATA, true));
+</script>
+</body>
+</html>
